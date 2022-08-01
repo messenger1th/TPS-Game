@@ -13,8 +13,11 @@ UCLASS()
 class THIRDPERSONFPS_API AGameHUD : public AHUD
 {
 	GENERATED_BODY()
-public:
-	virtual void DrawHUD() override;
-private:
-	void DrawCrossHair();
+
+
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="UI")
+	TSubclassOf<UUserWidget> PlayerHUDWidgetClass;
+
+	virtual void BeginPlay() override;
 };

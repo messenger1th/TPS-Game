@@ -4,16 +4,24 @@
 #include "BaseWeapon.h"
 #include "DrawDebugHelpers.h"
 #include "GameFramework/Character.h"
+#include "ThirdPersonFPS/Components/WeaponComponent.h"
+#include "ThirdPersonFPS/Other/Utils.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogBaseWeapon, All, All);
 
 // Called when the game starts or when spawned
 void ABaseWeapon::BeginPlay() {
 	Super::BeginPlay();
+	check(WeaponMesh);
+	
+	//TODO checkf usage.
+	checkf(DefaultAmmo.Bullets > 0, TEXT("Bullets count couldn't be less or equal zero")); 
+	checkf(DefaultAmmo.Bullets >= 0, TEXT("Bullets count couldn't be less  zero"));
+	
 	CurrentAmmo = DefaultAmmo;
 }
 
-void ABaseWeapon::MakeShot() {}
+void ABaseWeapon::MakeShot() {} //UE can't declare pure virtual function.
 
 void ABaseWeapon::StartFire() {}
 
@@ -72,33 +80,38 @@ bool ABaseWeapon::SetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotato
 
 bool ABaseWeapon::IsAmmoEmpty() const
 {
-	return !CurrentAmmo.Infinite && CurrentAmmo.Bullets == 0;
+	return CurrentAmmo.Bullets == 0;
 }
 
-bool ABaseWeapon::IsClipEmpty() const
+bool ABaseWeapon::IsSpareBulletsEmpty() const
 {
-	return CurrentAmmo.Clips == 0;
+	return CurrentAmmo.SpareBullets == 0;
 }
 
-void ABaseWeapon::ChangeClip()
+void ABaseWeapon::ReloadBullets()
 {
-	CurrentAmmo.Bullets = DefaultAmmo.Bullets;
-	--CurrentAmmo.Clips;
+	if (!CanReloadBullets())
+		return;
+	if (CurrentAmmo.Infinite)
+	{
+		CurrentAmmo.Bullets = DefaultAmmo.Bullets;
+	} else
+	{
+		const int32 AddBullets = std::min(DefaultAmmo.Bullets - CurrentAmmo.Bullets, CurrentAmmo.SpareBullets);
+		CurrentAmmo.SpareBullets -= AddBullets;
+		CurrentAmmo.Bullets += AddBullets;
+	}
 }
 
 void ABaseWeapon::DecreaseAmmo()
 {
 	--CurrentAmmo.Bullets;
-	LogAmmoInfromation();
-	if (CurrentAmmo.Bullets == 0 && !IsClipEmpty())
-	{
-		ChangeClip();
-	}
+	LogAmmoInformation();
 }
 
-void ABaseWeapon::LogAmmoInfromation() const
+void ABaseWeapon::LogAmmoInformation() const
 {
 	FString AmmoInfo = "Ammo: " + FString::FromInt(CurrentAmmo.Bullets) + " / ";
-	AmmoInfo += CurrentAmmo.Infinite ? "Infinite" : FString::FromInt(CurrentAmmo.Clips);
+	AmmoInfo += CurrentAmmo.Infinite ? "Infinite" : FString::FromInt(CurrentAmmo.SpareBullets);
 	UE_LOG(LogTemp, Warning, TEXT("%s"), *AmmoInfo);
 }

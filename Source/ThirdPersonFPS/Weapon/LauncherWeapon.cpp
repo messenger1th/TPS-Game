@@ -33,9 +33,10 @@ void ALauncherWeapon::MakeShot()
 void ALauncherWeapon::StartFire()
 {
 	MakeShot();
+	GetWorldTimerManager().SetTimer(ShootTimerHandle, this, &ALauncherWeapon::MakeShot, ShootPeriod, true);
 }
 
 void ALauncherWeapon::StopFire()
 {
-
+	GetWorldTimerManager().ClearTimer(ShootTimerHandle);
 }

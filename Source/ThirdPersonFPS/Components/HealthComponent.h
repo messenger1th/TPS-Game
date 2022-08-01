@@ -7,7 +7,8 @@
 
 #include "HealthComponent.generated.h"
 
-DEFINE_LOG_CATEGORY_STATIC(HealthComponent, All, All)
+DEFINE_LOG_CATEGORY_STATIC(HealthComponentLog, All, All)
+
 DECLARE_MULTICAST_DELEGATE(FOnDeath) //use to notify the death.
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnHealthChanged, float) // notify the HeathChange
 
@@ -21,6 +22,17 @@ public:
 	UHealthComponent();
 	FOnDeath OnDeath;
 	FOnHealthChanged OnHealthChanged;
+
+	UFUNCTION(BlueprintCallable, Category="Health")
+	float GetHealthPercent() { return CurrentHealth / MaxHealth; }
+
+	UFUNCTION(BlueprintCallable)
+	bool IsDead() {return CurrentHealth <= 0.0f;}
+
+	UFUNCTION(BlueprintCallable)
+	float GetHealth() const {return CurrentHealth;}
+
+	
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -32,14 +44,11 @@ protected:
 	UFUNCTION()
 	void OnTakeAnyDamageHandle(AActor* DamageActor, float Damage, const class UDamageType* DamageType, class AController* EventInstigator, AActor* DamageCauser);
 
-	UFUNCTION(BlueprintCallable)
-	bool IsDead() {return Health <= 0.0f;}
-
-	
 private:
-	float Health;
+	
+	float CurrentHealth;
 	void SetHealth(float Value);
+	
 public:
 	
-	float GetHealth() const {return Health;}
 };

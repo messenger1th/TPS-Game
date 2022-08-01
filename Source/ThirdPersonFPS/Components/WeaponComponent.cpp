@@ -5,9 +5,12 @@
 
 #include "Camera/CameraActor.h"
 #include "GameFramework/Character.h"
-#include "ThirdPersonFPS/Other/EquipFinishedAnimNotify.h"
+#include "ThirdPersonFPS/AnimNotify/EquipFinishedAnimNotify.h"
+#include "ThirdPersonFPS/AnimNotify/ReloadFinishedAnimNotify.h"
 #include "ThirdPersonFPS/Weapon/BaseWeapon.h"
 // Sets default values for this component's properties
+
+
 
 UWeaponComponent::UWeaponComponent():
 	ArmoryWeapons(nullptr),
@@ -25,8 +28,7 @@ UWeaponComponent::UWeaponComponent():
 void UWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
+	
 	InitAnimation();
 	SpawnWeapons();	
 }
@@ -39,6 +41,16 @@ void UWeaponComponent::StopFire()
 	CurrentWeapon->StopFire();
 }
 
+void UWeaponComponent::Reload()
+{
+	if (!CanReload()) return;
+	PlayReloadAnimMontage();
+	CurrentWeapon->ReloadBullets();
+
+	//TODO delete  test log.
+	UE_LOG(LogTemp, Error, TEXT("Reload"));
+}
+
 void UWeaponComponent::ChangeHoldWeaponState()
 {
 	if (!ArmoryWeapons)
@@ -46,7 +58,7 @@ void UWeaponComponent::ChangeHoldWeaponState()
 	
 	if (CurrentWeapon == nullptr)
 	{
-		PlayEquipAnimMotage();
+		PlayEquipAnimMontage();
 		PickUpCurrentWeaponFromArmoryWeapons();
 	} else
 	{
@@ -57,7 +69,21 @@ void UWeaponComponent::ChangeHoldWeaponState()
 }
 
 
+bool UWeaponComponent::GetWeaponUIData(FWeaponUIData& WeaponUIData) const
+{
+	if (CurrentWeapon == nullptr)
+		return false;
+	WeaponUIData = CurrentWeapon->GetUIData();
+	return true;
+}
 
+bool UWeaponComponent::GetCurrentWeaponAmmoData(FAmmoData& Ammo)
+{
+	if (CurrentWeapon == nullptr)
+		return false;
+	Ammo = CurrentWeapon->GetCurrentAmmoData();
+	return true;
+}
 
 void UWeaponComponent::StartFire()
 {
@@ -72,9 +98,9 @@ void UWeaponComponent::SpawnWeapons()
 	ACharacter* Character = Cast<ACharacter>(GetOwner());
 	if (!Character) return;
 
-	for (auto WeaponClass: WeaponClasses)
+	for (auto OneWeaponData: WeaponData)
 	{
-		const auto Weapon = GetWorld()->SpawnActor<ABaseWeapon>(WeaponClass);
+		const auto Weapon = GetWorld()->SpawnActor<ABaseWeapon>(OneWeaponData.WeaponClass);
 		if (!Weapon)
 		{
 			//TODO notify.
@@ -105,18 +131,15 @@ void UWeaponComponent::EquipNextWeapon()
 	
 	if (ArmoryWeapons == nullptr) return; //No Remaining Weapon
 
-	ClearWeaponOutlook();
+	BeforeWeaponChange();
 	
-	PlayEquipAnimMotage();
-
-	InsertCurrentWeaponToArmoryWeapons();
 	ArmoryWeapons = ArmoryWeapons->Next;
-	PickUpCurrentWeaponFromArmoryWeapons();
 
+	AfterWeaponChange();
+	
 	//TODO delete Debug Information;
 	/**/
 	UE_LOG(LogTemp, Warning, TEXT("Equip Next Weapon"));
-	SetWeaponOutlook();
 }
 
 void UWeaponComponent::EquipPreviousWeapon()
@@ -125,19 +148,14 @@ void UWeaponComponent::EquipPreviousWeapon()
 	
 	if (ArmoryWeapons == nullptr)	return; //No Remaining Weapon
 
-	PlayEquipAnimMotage();
+	BeforeWeaponChange();
 	
-	ClearWeaponOutlook();
-	
-	InsertCurrentWeaponToArmoryWeapons();
 	ArmoryWeapons = ArmoryWeapons->Previous;
-	PickUpCurrentWeaponFromArmoryWeapons();
-
+	
+	AfterWeaponChange();
 	//TODO delete Debug Information;
 	/**/
 	UE_LOG(LogTemp, Warning, TEXT("Equip Previous Weapon"));
-	
-	SetWeaponOutlook();
 }
 
 void UWeaponComponent::SetWeaponOutlook()
@@ -158,6 +176,33 @@ void UWeaponComponent::ClearWeaponOutlook()
 	DetachWeaponFromSocket(GetNextWeapon());
 }
 
+void UWeaponComponent::SetReloadAnimMontage()
+{
+	const auto CurrentWeaponData = WeaponData.FindByPredicate([&] (const FWeaponData& Data)
+	{
+		return Data.WeaponClass == CurrentWeapon->GetClass();
+	});
+
+	CurrentReloadAniMontage = CurrentWeaponData->ReloadAnimMontage;
+}
+
+void UWeaponComponent::BeforeWeaponChange()
+{
+	PlayEquipAnimMontage();
+	
+	ClearWeaponOutlook();
+	
+	InsertCurrentWeaponToArmoryWeapons();
+}
+
+void UWeaponComponent::AfterWeaponChange()
+{
+	PickUpCurrentWeaponFromArmoryWeapons();
+	
+	SetWeaponOutlook();
+}
+
+
 void UWeaponComponent::AttachWeaponToSocket(ABaseWeapon* WeaponPtr, const FName& SocketName)
 {
 	if (WeaponPtr == nullptr)
@@ -172,11 +217,13 @@ void UWeaponComponent::InsertCurrentWeaponToArmoryWeapons()
 {
 	ArmoryWeapons = ArmoryWeapons->insert(CurrentWeapon);
 	CurrentWeapon = nullptr;
+	CurrentReloadAniMontage = nullptr;
 }
 
 void UWeaponComponent::PickUpCurrentWeaponFromArmoryWeapons()
 {
 	CurrentWeapon = GetWeaponFromArmory(ArmoryWeapons);
+	SetReloadAnimMontage();
 }
 
 ABaseWeapon* UWeaponComponent::GetWeaponFromArmory(CircleList<ABaseWeapon*>*& CurrentWeaponIterator)
@@ -209,24 +256,16 @@ void UWeaponComponent::PlayAnimMontage(UAnimMontage* Animation)
 	Character->PlayAnimMontage(Animation);
 }
 
-void UWeaponComponent::PlayEquipAnimMotage()
+void UWeaponComponent::PlayEquipAnimMontage()
 {
-	PlayAnimMontage(EquipAnimMontage);
 	EquipAnimationProcessing = true;
+	PlayAnimMontage(EquipAnimMontage);
 }
 
-void UWeaponComponent::InitAnimation()
+void UWeaponComponent::PlayReloadAnimMontage()
 {
-	const auto NotifyEvents = EquipAnimMontage->Notifies;
-	for (const auto& Event: NotifyEvents)
-	{
-		const auto EquipFinishedNotify = Cast<UEquipFinishedAnimNotify>(Event.Notify);
-		if (EquipFinishedNotify)
-		{
-			EquipFinishedNotify->OnNotified.AddUObject(this, &UWeaponComponent::OnEquipFinished);
-			break;
-		}
-	}
+	ReloadAnimationProcessing = true;
+	PlayAnimMontage(CurrentReloadAniMontage);
 }
 
 void UWeaponComponent::OnEquipFinished(USkeletalMeshComponent* MeshComponent)
@@ -238,13 +277,50 @@ void UWeaponComponent::OnEquipFinished(USkeletalMeshComponent* MeshComponent)
 	UE_LOG(LogTemp, Error, TEXT("Equip Finished"));
 }
 
-bool UWeaponComponent::CanFire()
+void UWeaponComponent::OnReloadFinished(USkeletalMeshComponent* MeshComponent)
 {
-	return CurrentWeapon != nullptr && !EquipAnimationProcessing;
+	const ACharacter* Character = Cast<ACharacter>(GetOwner());
+	if (!Character || MeshComponent != Character->GetMesh()) return;
+	
+	ReloadAnimationProcessing = false;
+	UE_LOG(LogTemp, Error, TEXT("Reload Finished"));
 }
 
-bool UWeaponComponent::CanEquip()
+void UWeaponComponent::InitAnimation()
 {
-	return !EquipAnimationProcessing;
+	//find relevant notification from animation notify event to bind function.
+	const auto EquipFinishedNotify = FindNotifyByClass<UEquipFinishedAnimNotify>(EquipAnimMontage);
+
+	//TODO set clear DEBUG information.
+	checkf(EquipFinishedNotify, TEXT("Please Set Equip finished Notify, unless the weapon doesn't work.")); 
+
+	if (EquipFinishedNotify)
+	{
+		//bind function.
+		EquipFinishedNotify->OnNotified.AddUObject(this, &UWeaponComponent::OnEquipFinished);
+	} else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Please Set Equip finished notify In AnimMontage."))
+	}
+	
+	//TODO Optimize it : Time Complexity O(m * n); m : Weapon number, n : classes' notify number;
+
+	//Actually bind number depends on the weapon you have, such as three weapons will create 3 times bind
+	//and notify 3 times after every //TODO waiting fix;
+	/*find relevant reload notify for each weapon in WeaponData.*/ 
+	for (const auto& OneWeaponData: WeaponData)
+	{
+		const auto ReloadFinishedNotify = FindNotifyByClass<UReloadFinishedAnimNotify>(OneWeaponData.ReloadAnimMontage);
+		
+		checkf(ReloadFinishedNotify, TEXT("Please Set Reload finished Notify, unless the weapon doesn't work.")); 
+		if (!ReloadFinishedNotify)
+		{
+			UE_LOG(LogTemp, Error, TEXT("Please Set Reload finished notify In AnimMontage."))
+			continue;
+		}
+		ReloadFinishedNotify->OnNotified.AddUObject(this, &UWeaponComponent::OnReloadFinished);
+	}
 }
+
+
 

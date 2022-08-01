@@ -6,6 +6,19 @@
 #include "GameFramework/Actor.h"
 #include "BaseWeapon.generated.h"
 
+
+USTRUCT(BlueprintType)
+struct FWeaponUIData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="UI")
+	UTexture2D* ThumbnailPreview;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite , Category="UI")
+	UTexture2D* CrossIcon;
+};
+
 USTRUCT(BlueprintType)
 struct FAmmoData
 {
@@ -15,7 +28,7 @@ struct FAmmoData
 	int32 Bullets;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Weapon", meta = (EditCondition = "!Infinite"));
-	int32 Clips;
+	int32 SpareBullets;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Weapon")
 	bool Infinite;
@@ -34,28 +47,52 @@ public:
 public:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	
-public:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FWeaponUIData GetUIData() const { return UIData; }
+
+	UFUNCTION(BlueprintCallable)
+	int32 GetCurrentAmmoBullets() const { return CurrentAmmo.Bullets; };
+
+	UFUNCTION(BlueprintCallable)
+	int32 GetCurrentAmmoClips() const { return CurrentAmmo.SpareBullets; }
+
+	UFUNCTION(BlueprintCallable)
+	bool IsAmmoInfinite() const { return CurrentAmmo.Infinite; }
+
+	UFUNCTION(BlueprintCallable)
+	FAmmoData GetCurrentAmmoData() const { return CurrentAmmo; }
+	
+	
+protected:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Weapon")
 	FName MuzzleName = "MuzzleSocket";
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditDefaultsOnly, Category= "Weapon")
 	USkeletalMeshComponent* WeaponMesh;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Weapon")
-	FAmmoData DefaultAmmo{30, 5, false};
+	FAmmoData DefaultAmmo{30, 60, false};
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Weapon")
+	FWeaponUIData UIData;
+	
+	
+public:
 	virtual void MakeShot();
 	virtual void StartFire();
 	virtual void StopFire();
 
 	bool IsAmmoEmpty() const;
-	bool IsClipEmpty() const;
-	void ChangeClip();
+	bool IsSpareBulletsEmpty() const;
+	
+	void ReloadBullets();
 	void DecreaseAmmo();
 
-	void LogAmmoInfromation() const;
+	bool CanReloadBullets() const { return CurrentAmmo.Infinite || (CurrentAmmo.Bullets < DefaultAmmo.Bullets && CurrentAmmo.SpareBullets > 0); }
+	
+	void LogAmmoInformation() const;
+	
 private:
 	float TraceMaxDistance = 1500;
 
@@ -69,7 +106,6 @@ protected:
 	bool SetTraceData(FVector& TraceStart, FVector& TraceEnd);
 
 	void MakeTraceHit(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd);
-
 private:
 	FAmmoData CurrentAmmo;
 };

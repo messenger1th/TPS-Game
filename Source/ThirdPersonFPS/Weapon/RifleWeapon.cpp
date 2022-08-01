@@ -12,7 +12,7 @@ void ARifleWeapon::MakeShot()
 	if (!GetWorld() || IsAmmoEmpty()) return;
 	
 	FVector TraceStart, TraceEnd;
-	if (!SetTraceData(TraceStart, TraceEnd))	return ;
+	if (!SetTraceData(TraceStart, TraceEnd))	return;
 	
 	FHitResult HitResult;
 	MakeTraceHit(HitResult, TraceStart, TraceEnd);

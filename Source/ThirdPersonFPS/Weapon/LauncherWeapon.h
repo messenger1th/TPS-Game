@@ -22,4 +22,11 @@ public:
 	virtual void MakeShot() override;;
 	virtual void StartFire() override;;
 	virtual void StopFire() override;
+
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Weapon")
+	float ShootPeriod = 1.0f;
+	
+private:
+	FTimerHandle ShootTimerHandle;
 };

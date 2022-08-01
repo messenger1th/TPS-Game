@@ -64,6 +64,7 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAction("ChangeHoldWeaponState", IE_Pressed, WeaponComponent, &UWeaponComponent::ChangeHoldWeaponState);
 	PlayerInputComponent->BindAction("PreviousWeapon", IE_Pressed, WeaponComponent, &UWeaponComponent::EquipPreviousWeapon);
 	PlayerInputComponent->BindAction("NextWeapon", IE_Pressed, WeaponComponent, &UWeaponComponent::EquipNextWeapon);
+	PlayerInputComponent->BindAction("Reload", IE_Pressed, WeaponComponent, &UWeaponComponent::Reload);
 }
 
 void ABaseCharacter::TurnAround(float Value)
