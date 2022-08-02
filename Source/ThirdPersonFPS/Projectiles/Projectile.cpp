@@ -57,12 +57,8 @@ void AProjectile::OnProjectileHit(UPrimitiveComponent* HitComponent, AActor* Oth
 		 DoFullDamage
 	);
 
-	DrawDebugSphere(GetWorld(), GetActorLocation(), DamageRadius, 24, FColor::Red, false, 5.0f);
-
-	/* test Code */
-	if (Applied) UE_LOG(LogTemp, Warning, TEXT("damaged"));
-	/* test Code */
-
+	DrawDebugSphere(GetWorld(), GetActorLocation(), DamageRadius, 24, FColor::Red, false, 0.5f);
+	
 	Destroy();
 }
 

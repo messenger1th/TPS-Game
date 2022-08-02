@@ -16,14 +16,15 @@ void ARifleWeapon::MakeShot()
 	
 	FHitResult HitResult;
 	MakeTraceHit(HitResult, TraceStart, TraceEnd);
-	
 	if (HitResult.bBlockingHit)
 	{
+		MakeDamage(HitResult);
 		DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(),  HitResult.ImpactPoint, FColor::Red, false, 3.0f, 0, 3.0f);
 		DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.0f, 24, FColor::Blue, false, 3.0f);
+		
 	} else
 	{
-		DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(),  TraceEnd, FColor::Red, false, 3.0f, 0, 3.0f);
+		DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(),  TraceEnd, FColor::Green, false, 3.0f, 0, 3.0f);
 	}
 	DecreaseAmmo();
 }
@@ -38,5 +39,13 @@ void ARifleWeapon::StartFire()
 void ARifleWeapon::StopFire()
 {
 	GetWorldTimerManager().ClearTimer(ShootTimerHandle);
+}
+
+void ARifleWeapon::MakeDamage(FHitResult& HitResult)
+{
+	const auto DamagedActor = HitResult.GetActor();
+	if (!DamagedActor) return;
+
+	DamagedActor->TakeDamage(DamageAmount, FDamageEvent(), GetController(), this);
 }
 

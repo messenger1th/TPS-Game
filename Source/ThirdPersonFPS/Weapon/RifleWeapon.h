@@ -24,8 +24,8 @@ public:
 	void MakeShot() override;
 	void StartFire() override;
 	void StopFire() override;
-	
-	FTimerHandle ShootTimerHandle;
+
 private:
-	
+	void MakeDamage(FHitResult& HitResult);
+	FTimerHandle ShootTimerHandle;
 };

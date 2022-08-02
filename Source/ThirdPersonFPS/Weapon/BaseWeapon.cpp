@@ -62,12 +62,12 @@ bool ABaseWeapon::SetTraceData(FVector& TraceStart, FVector& TraceEnd)
 
 void ABaseWeapon::MakeTraceHit(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd)
 {
-	if (GetWorld())	return;
+	if (!GetWorld()) return;
 	
 	FCollisionQueryParams CollisionQueryParams;
 	CollisionQueryParams.AddIgnoredActor(GetOwner());
 	
-	GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility);
+	GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility, CollisionQueryParams);
 }
 
 bool ABaseWeapon::SetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotator)

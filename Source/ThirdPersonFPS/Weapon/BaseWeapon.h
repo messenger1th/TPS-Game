@@ -94,7 +94,7 @@ public:
 	void LogAmmoInformation() const;
 	
 private:
-	float TraceMaxDistance = 1500;
+	float TraceMaxDistance = 1500.0f;
 
 protected:
 	FVector GetMuzzleWorldLocation() const{
