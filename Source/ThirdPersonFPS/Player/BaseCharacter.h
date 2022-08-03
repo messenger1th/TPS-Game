@@ -18,7 +18,7 @@ class THIRDPERSONFPS_API ABaseCharacter : public ACharacter
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
+	// Sets default Values for this character's properties
 	ABaseCharacter();
 
 protected:
@@ -63,17 +63,19 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	float GetMovementDirection() const;
+
+	
 	
 	UFUNCTION(BlueprintCallable)
 	bool IsHoldingWeapon() const { return WeaponComponent ->IsHoldingWeapon();};
 	
 private:
-	void MoveForward(float value);
-	void MoveRight(float value);
+	void MoveForaward(float Value);
+	void MoveRight(float Value);
 	void StartCrouching();
 	void StopCrouching();
-	void LookUp(float value);
-	void TurnAround(float value);
+	void LookUp(float Value);
+	void TurnAround(float Value);
 	void OnDeath();
 	void OnHealthChanged(float Health) const;
 };
