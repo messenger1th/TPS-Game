@@ -70,7 +70,7 @@ public:
 	bool IsHoldingWeapon() const { return WeaponComponent ->IsHoldingWeapon();};
 	
 private:
-	void MoveForaward(float Value);
+	void MoveForward(float Value);
 	void MoveRight(float Value);
 	void StartCrouching();
 	void StopCrouching();

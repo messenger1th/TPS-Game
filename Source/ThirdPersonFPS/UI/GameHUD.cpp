@@ -10,9 +10,10 @@
 void AGameHUD::BeginPlay()
 {
 	Super::BeginPlay();
-	const auto PlayerHUDWidget = CreateWidget<UUserWidget>(GetWorld(), PlayerHUDWidgetClass);
-	check(PlayerHUDWidget);
+	const auto PlayerWidget = CreateWidget<UUserWidget>(GetWorld(), PlayerWidgetClass);
 
-	PlayerHUDWidget->AddToViewport();
+	check(PlayerWidget);
+
+	PlayerWidget->AddToViewport();
 }
 

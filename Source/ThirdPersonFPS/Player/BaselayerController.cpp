@@ -3,3 +3,9 @@
 
 #include "BaselayerController.h"
 
+void ABaselayerController::BeginPlay()
+{
+	Super::BeginPlay();
+	
+}
+

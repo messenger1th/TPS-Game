@@ -17,7 +17,7 @@ class THIRDPERSONFPS_API AGameHUD : public AHUD
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="UI")
-	TSubclassOf<UUserWidget> PlayerHUDWidgetClass;
+	TSubclassOf<UUserWidget> PlayerWidgetClass;
 
 	virtual void BeginPlay() override;
 };
