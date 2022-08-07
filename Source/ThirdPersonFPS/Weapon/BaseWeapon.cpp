@@ -14,7 +14,7 @@ void ABaseWeapon::BeginPlay() {
 	//TODO checkf usage.
 	checkf(DefaultAmmo.Bullets > 0, TEXT("Bullets count couldn't be less or equal zero")); 
 	checkf(DefaultAmmo.SpareBullets >= 0, TEXT("Spared Bullets count couldn't be less  zero"));
-	n
+	
 	CurrentAmmo = DefaultAmmo;
 }
 
