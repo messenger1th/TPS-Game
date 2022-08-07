@@ -25,6 +25,4 @@ protected:
 protected:
 	
 	virtual void MakeShot() override;
-
-
 };

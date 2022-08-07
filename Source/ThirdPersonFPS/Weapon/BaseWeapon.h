@@ -77,7 +77,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Weapon")
 	FWeaponUIData UIData;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Weapon")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Weapon")
 	float FirePeriod = 0.1f;
 	
 public:
