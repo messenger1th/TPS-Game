@@ -14,19 +14,17 @@ UCLASS()
 class THIRDPERSONFPS_API ALauncherWeapon : public ABaseWeapon
 {
 	GENERATED_BODY()
-
+	
 public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Weapon")
-	TSubclassOf<AProjectile> ProjectileClass;
-
-	virtual void MakeShot() override;;
-	virtual void StartFire() override;;
-	virtual void StopFire() override;
-
+	ALauncherWeapon();
+	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Weapon")
-	float ShootPeriod = 1.0f;
+	TSubclassOf<AProjectile> ProjectileClass;
 	
-private:
-	FTimerHandle ShootTimerHandle;
+protected:
+	
+	virtual void MakeShot() override;
+
+
 };

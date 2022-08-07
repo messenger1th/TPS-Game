@@ -76,12 +76,15 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Weapon")
 	FWeaponUIData UIData;
-	
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Weapon")
+	float FirePeriod = 0.1f;
 	
 public:
 	virtual void MakeShot();
-	virtual void StartFire();
-	virtual void StopFire();
+	
+	void StartFire();
+	void StopFire();
 
 	bool IsAmmoEmpty() const;
 	bool IsSpareBulletsEmpty() const;
@@ -92,10 +95,12 @@ public:
 	bool CanReloadBullets() const { return CurrentAmmo.Infinite || (CurrentAmmo.Bullets < DefaultAmmo.Bullets && CurrentAmmo.SpareBullets > 0); }
 	
 	void LogAmmoInformation() const;
+
 	
 private:
 	float TraceMaxDistance = 1500.0f;
-
+	bool IsFiring = false;
+	
 protected:
 	FVector GetMuzzleWorldLocation() const{
 		return WeaponMesh->GetSocketLocation(MuzzleName);
@@ -108,4 +113,5 @@ protected:
 	void MakeTraceHit(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd);
 private:
 	FAmmoData CurrentAmmo;
+	FTimerHandle ShootTimerHandle;
 };

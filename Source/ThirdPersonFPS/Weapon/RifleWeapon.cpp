@@ -5,7 +5,10 @@
 #include "DrawDebugHelpers.h"
 #include "GameFramework/Character.h"
 
-
+ARifleWeapon::ARifleWeapon()
+{
+	FirePeriod = 0.1;
+}
 
 void ARifleWeapon::MakeShot()
 {
@@ -29,17 +32,6 @@ void ARifleWeapon::MakeShot()
 	DecreaseAmmo();
 }
 
-void ARifleWeapon::StartFire()
-{
-	
-	MakeShot();
-	GetWorldTimerManager().SetTimer(ShootTimerHandle, this, &ARifleWeapon::MakeShot, ShootPeriod, true);
-}
-
-void ARifleWeapon::StopFire()
-{
-	GetWorldTimerManager().ClearTimer(ShootTimerHandle);
-}
 
 void ARifleWeapon::MakeDamage(FHitResult& HitResult)
 {

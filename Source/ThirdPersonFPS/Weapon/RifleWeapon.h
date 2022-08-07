@@ -17,15 +17,10 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	float DamageAmount = 10.0f;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	float ShootPeriod = 0.1f;
-	
 public:
-	void MakeShot() override;
-	void StartFire() override;
-	void StopFire() override;
+	ARifleWeapon();
+	virtual void MakeShot() override;
 
 private:
 	void MakeDamage(FHitResult& HitResult);
-	FTimerHandle ShootTimerHandle;
 };

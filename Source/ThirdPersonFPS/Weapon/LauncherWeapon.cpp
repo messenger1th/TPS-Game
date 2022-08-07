@@ -5,6 +5,11 @@
 
 #include "Kismet/GameplayStatics.h"
 
+ALauncherWeapon::ALauncherWeapon()
+{
+	FirePeriod = 1.0;
+}
+
 void ALauncherWeapon::MakeShot()
 {
 	if (!GetWorld() || IsAmmoEmpty()) return;
@@ -30,13 +35,3 @@ void ALauncherWeapon::MakeShot()
 	DecreaseAmmo();
 }
 
-void ALauncherWeapon::StartFire()
-{
-	MakeShot();
-	GetWorldTimerManager().SetTimer(ShootTimerHandle, this, &ALauncherWeapon::MakeShot, ShootPeriod, true);
-}
-
-void ALauncherWeapon::StopFire()
-{
-	GetWorldTimerManager().ClearTimer(ShootTimerHandle);
-}

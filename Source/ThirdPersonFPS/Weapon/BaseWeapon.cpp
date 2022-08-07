@@ -4,10 +4,7 @@
 #include "BaseWeapon.h"
 #include "DrawDebugHelpers.h"
 #include "GameFramework/Character.h"
-#include "ThirdPersonFPS/Components/WeaponComponent.h"
-#include "ThirdPersonFPS/Other/Utils.h"
 
-DEFINE_LOG_CATEGORY_STATIC(LogBaseWeapon, All, All);
 
 // Called when the game starts or when spawned
 void ABaseWeapon::BeginPlay() {
@@ -16,16 +13,27 @@ void ABaseWeapon::BeginPlay() {
 	
 	//TODO checkf usage.
 	checkf(DefaultAmmo.Bullets > 0, TEXT("Bullets count couldn't be less or equal zero")); 
-	checkf(DefaultAmmo.Bullets >= 0, TEXT("Bullets count couldn't be less  zero"));
-	
+	checkf(DefaultAmmo.SpareBullets >= 0, TEXT("Spared Bullets count couldn't be less  zero"));
+	n
 	CurrentAmmo = DefaultAmmo;
 }
 
 void ABaseWeapon::MakeShot() {} //UE can't declare pure virtual function.
 
-void ABaseWeapon::StartFire() {}
+void ABaseWeapon::StartFire()
+{
+	if (IsFiring) return;
+	IsFiring = true;
+	MakeShot();
+	UE_LOG(LogTemp, Warning, TEXT("sotopfairel1"));
+	GetWorldTimerManager().SetTimer(ShootTimerHandle, this, &ABaseWeapon::StopFire, FirePeriod, false);
+}
 
-void ABaseWeapon::StopFire() {}
+void ABaseWeapon::StopFire()
+{
+	IsFiring = false;
+	GetWorldTimerManager().ClearTimer(ShootTimerHandle);
+}
 
 // Sets default values
 ABaseWeapon::ABaseWeapon()
@@ -39,7 +47,7 @@ ABaseWeapon::ABaseWeapon()
 
 AController* ABaseWeapon::GetController() const
 {
-	if (!GetWorld())return nullptr;
+	if (!GetWorld()) return nullptr;
 
 	const auto Player = Cast<ACharacter>(GetOwner());
 	if (!Player) return nullptr;
@@ -92,6 +100,7 @@ void ABaseWeapon::ReloadBullets()
 {
 	if (!CanReloadBullets())
 		return;
+	StopFire();
 	if (CurrentAmmo.Infinite)
 	{
 		CurrentAmmo.Bullets = DefaultAmmo.Bullets;
