@@ -15,8 +15,9 @@ void ALauncherWeapon::MakeShot()
 	if (!GetWorld() || IsAmmoEmpty()) return;
 
 	Super::MakeShot();
-	UE_LOG(LogTemp, Error, TEXT("lAUCNH"));
 
+	UE_LOG(LogTemp, Error, TEXT("!12"));
+	
 	FVector TraceStart, TraceEnd;
 	if (!SetTraceData(TraceStart, TraceEnd)) return;
 

@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "GameFramework/Pawn.h"
 
 class Utils
 {
