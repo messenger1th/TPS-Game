@@ -17,6 +17,4 @@ class THIRDPERSONFPS_API ABaselayerController : public APlayerController
 protected:
 	virtual void BeginPlay() override;
 
-	virtual void SetupInputComponent() override;
-	virtual void Pause() override;
 };

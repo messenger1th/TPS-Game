@@ -113,5 +113,6 @@ protected:
 	void MakeTraceHit(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd);
 private:
 	FAmmoData CurrentAmmo;
-	FTimerHandle ShootTimerHandle;
+	FTimerHandle FireDartleHandle;
+	FTimerHandle FireGapHandle;
 };

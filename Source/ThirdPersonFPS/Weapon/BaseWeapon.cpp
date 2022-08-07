@@ -18,21 +18,24 @@ void ABaseWeapon::BeginPlay() {
 	CurrentAmmo = DefaultAmmo;
 }
 
-void ABaseWeapon::MakeShot() {} //UE can't declare pure virtual function.
+void ABaseWeapon::MakeShot()
+{
+	IsFiring = true;
+	GetWorldTimerManager().SetTimer(FireGapHandle, [&]	{ IsFiring = false; }, FirePeriod, false);
+}
 
 void ABaseWeapon::StartFire()
 {
 	if (IsFiring) return;
-	IsFiring = true;
+
 	MakeShot();
-	UE_LOG(LogTemp, Warning, TEXT("sotopfairel1"));
-	GetWorldTimerManager().SetTimer(ShootTimerHandle, this, &ABaseWeapon::StopFire, FirePeriod, false);
+	GetWorldTimerManager().SetTimer(FireDartleHandle, this, &ABaseWeapon::MakeShot, FirePeriod, true);
+	//TODO 修复两次重复点击，无法进入射击循环的问题。即在第二次Press的IsFiring的判定处就退出了。
 }
 
 void ABaseWeapon::StopFire()
 {
-	IsFiring = false;
-	GetWorldTimerManager().ClearTimer(ShootTimerHandle);
+	GetWorldTimerManager().ClearTimer(FireDartleHandle);
 }
 
 // Sets default values

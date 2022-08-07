@@ -14,6 +14,8 @@ void ARifleWeapon::MakeShot()
 {
 	if (!GetWorld() || IsAmmoEmpty()) return;
 	
+	Super::MakeShot();
+
 	FVector TraceStart, TraceEnd;
 	if (!SetTraceData(TraceStart, TraceEnd))	return;
 	
