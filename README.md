@@ -8,7 +8,7 @@
 
 ### 任务书
 
-<img src="README.assets/mmexport1658396522950.jpg" alt="mmexport1658396522950" style="zoom:50%;" />
+<img src="README.assets/mmexport1658396522950-16611683895014.jpg" alt="mmexport1658396522950" style="zoom:50%;" />
 
 ### 要点拆解
 
@@ -26,6 +26,46 @@
 8. 网络支持上，本机DS多玩家对战（局域网联机）
    * 需要使用源代码构建版本。
 9. AI行为树。
+
+
+
+### 实现介绍
+
+#### **枪械系统**
+
+设计一个基类 `BaseWeapon`
+
+**射线检测**
+
+<img src="README.assets/image-20220822201303705.png" alt="image-20220822201303705" style="zoom:67%;" />
+
+**投掷物碰撞检测，添加径向伤害**
+
+<img src="README.assets/image-20220822201444684.png" alt="image-20220822201444684" style="zoom: 67%;" />
+
+
+
+
+
+#### 界面系统
+
+**开始界面**
+
+<img src="README.assets/image-20220822195543515.png" alt="image-20220822195543515" style="zoom:50%;" />
+
+**暂停界面（暂停widget）**
+
+<img src="README.assets/image-20220822195837004.png" alt="image-20220822195837004" style="zoom: 67%;" />
+
+**用户游戏信息界面**：（根据持有的武器选取**武器对应**的**贴图和瞄准图标**）
+
+<img src="README.assets/image-20220822200024665.png" alt="image-20220822200024665" style="zoom:50%;" />
+
+**死亡widget**：死亡时可见。
+
+![image-20220822200300468](README.assets/image-20220822200300468.png)
+
+
 
 
 
@@ -73,9 +113,33 @@
 
 ### 扩展部分
 
-#### 动画方面
+#### 动画
 
-* 
+实现了蹲走，跑动，跳跃，**八向移动**，**瞄准偏移（动画缓存骨骼分层）**。拳头和持枪、站立和蹲走的**动画机**。以及**死亡状态的Montage**
+
+<img src="README.assets/image-20220822195409360.png" alt="image-20220822195409360" style="zoom:50%;" />
+
+
+
+* 八向移动 
+
+  <img src="README.assets/image-20220822194531855.png" alt="image-20220822194531855" style="zoom: 67%;" />
+
+  <img src="README.assets/image-20220822194506019.png" alt="image-20220822194506019" style="zoom: 67%;" />
+
+  
+
+* 瞄准偏移（动画缓存骨骼分层）
+
+  <img src="README.assets/image-20220822194952792.png" alt="image-20220822194952792" style="zoom:50%;" />
+
+  
+
+  <img src="README.assets/image-20220822194652120.png" alt="image-20220822194652120" style="zoom:50%;" />
+
+* 蹲走和战力、持枪和持拳状态机（持枪都设置了瞄准偏移）
+
+  <img src="README.assets/image-20220822194856629.png" alt="image-20220822194856629" style="zoom:50%;" />
 
 
 
