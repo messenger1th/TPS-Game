@@ -41,12 +41,9 @@ void AProjectile::OnProjectileHit(UPrimitiveComponent* HitComponent, AActor* Oth
 	check(GetOwner()->GetInstigatorController());
 
 	MovementComponent->StopMovementImmediately();
+	
 
-	/* test Code */
-	bool Applied = false;
-	/* test Code */
-
-	Applied = UGameplayStatics::ApplyRadialDamage(GetWorld(),
+	UGameplayStatics::ApplyRadialDamage(GetWorld(),
 		MaxDamageAmount,
 		GetActorLocation(),
 		DamageRadius,
@@ -56,7 +53,7 @@ void AProjectile::OnProjectileHit(UPrimitiveComponent* HitComponent, AActor* Oth
 		 GetOwner()->GetInstigatorController(),
 		 DoFullDamage
 	);
-
+    
 	DrawDebugSphere(GetWorld(), GetActorLocation(), DamageRadius, 24, FColor::Red, false, 0.5f);
 	
 	Destroy();
